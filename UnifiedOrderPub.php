@@ -216,4 +216,35 @@ class UnifiedOrderPub
 			return false;
 		}
 	}
+
+	/**
+	 * 	退款
+	 */
+	public function refund($xml,$url)
+	{
+		$ch = curl_init();
+		curl_setopt($ch,CURLOPT_URL,$url);
+		curl_setopt($ch,CURLOPT_HEADER,FALSE);
+		curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+		curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,1);//证书检查
+		curl_setopt($ch,CURLOPT_SSLCERTTYPE,'pem');
+		curl_setopt($ch,CURLOPT_SSLCERT,getcwd().'/cert/apiclient_cert.pem');
+		curl_setopt($ch,CURLOPT_SSLCERTTYPE,'pem');
+		curl_setopt($ch,CURLOPT_SSLKEY,getcwd().'/cert/apiclient_key.pem');
+		curl_setopt($ch,CURLOPT_SSLCERTTYPE,'pem');
+		curl_setopt($ch,CURLOPT_CAINFO,getcwd().'/cert/rootca.pem');
+		curl_setopt($ch,CURLOPT_POST,1);
+		curl_setopt($ch,CURLOPT_POSTFIELDS,$xml);
+		$data = curl_exec($ch);
+		if($data){ //返回来的是xml格式需要转换成数组再提取值，用来做更新
+			curl_close($ch);
+			return $data;
+		}else{
+			$error = curl_errno($ch);
+			echo "curl出错，错误码:$error"."<br>";
+			echo "<a href='http://curl.haxx.se/libcurl/c/libcurl-errors.html'>错误原因查询</a></br>";
+			curl_close($ch);
+			return false;
+		}
+	}
 }
